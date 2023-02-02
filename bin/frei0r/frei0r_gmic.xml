@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE kpartgui>
+<effect tag="frei0r.frei0r_gmic" id="frei0r.frei0r_gmic">
+    <name>G'MIC Plugin</name>
+    <description>G'MIC Plugin</description>
+    <author>Tobias Fleischer</author>
+    <parameter type="animated" name="Parameter A" default="0" min="0" max="100" factor="100"><name>Parameter A</name></parameter>
+    <parameter type="animated" name="Parameter B" default="0" min="0" max="100" factor="100"><name>Parameter B</name></parameter>
+    <parameter type="animated" name="Parameter C" default="0" min="0" max="100" factor="100"><name>Parameter C</name></parameter>
+    <parameter type="animated" name="Parameter D" default="0" min="0" max="100" factor="100"><name>Parameter D</name></parameter>
+    <parameter type="animated" name="Parameter E" default="0" min="0" max="100" factor="100"><name>Parameter E</name></parameter>
+    <parameter type="animated" name="Parameter F" default="0" min="0" max="100" factor="100"><name>Parameter F</name></parameter>
+    <parameter type="animated" name="Parameter G" default="0" min="0" max="100" factor="100"><name>Parameter G</name></parameter>
+    <parameter type="animated" name="Parameter H" default="0" min="0" max="100" factor="100"><name>Parameter H</name></parameter>
+    <parameter type="keywords" name="Command" default="-blur {$A*50}" paramlist=""><name>Command</name><paramlistdisplay></paramlistdisplay></parameter>
+    <parameter type="list" name="Output Layer" default="10" paramlist="0;1;2;3;4;5;6;7;8;9;10"><name>Output Layer</name><paramlistdisplay>Merged,Layer 0 (Bottom),Layer -1,Layer -2,Layer -3,Layer -4,Layer -5,Layer -6,Layer -7,Layer -8,Layer -9 (Top)</paramlistdisplay></parameter>
+    <parameter type="list" name="Resize Mode" default="1" paramlist="0;1;2;3;4;5"><name>Resize Mode</name><paramlistdisplay>Fixed (Inplace),Dynamic,Downsample 1/2,Downsample 1/4,Downsample 1/8,Downsample 1/16</paramlistdisplay></parameter>
+    <parameter type="bool" name="Ignore Alpha" default="0"><name>Ignore Alpha</name></parameter>
+    <parameter type="bool" name="Preview Mode" default="0"><name>Preview/Draft Mode</name></parameter>
+    <parameter type="constant" name="Global Random Seed" default="0" min="0" max="10000"><name>Global Random Seed</name></parameter>
+    <parameter type="bool" name="Animate Random Seed" default="0"><name>Animate Random Seed</name></parameter>
+    <parameter type="list" name="Log Verbosity" default="0" paramlist="0;1;2;3;4;5;6;7;8;9;10"><name>Log Verbosity</name><paramlistdisplay>Off,Level 1,Level 2,Level 3,Level 4,Level 5,Level 6,Level 7,Level 8,Level 9,Level 10</paramlistdisplay></parameter>                
+</effect>
