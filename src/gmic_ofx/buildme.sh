@@ -1,0 +1,1 @@
+g++ -DOFX_PLUGIN ../gmic_plugin.cpp -L. libcgmicstatic.so -o gmic_ofx.ofx -I.. -I../ThirdParty/OpenFX/include -I../ThirdParty/OpenFX/Examples/include

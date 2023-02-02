@@ -1,0 +1,218 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\gmic_plugin.h" />
+    <ClInclude Include="..\..\gmic_utils.h" />
+    <ClInclude Include="..\..\RFX_OFX_Utils.h" />
+    <ClInclude Include="..\..\RFX_StringUtils.h" />
+    <ClInclude Include="..\..\webrequest.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\gmic_plugin.cpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>gmic_ofx</ProjectName>
+    <ProjectGuid>{03B9C6AD-426C-4DEA-A73E-E25CDC2FEA73}</ProjectGuid>
+    <RootNamespace>gmic_ofx</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.61030.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Platform)\$(ProjectName).ofx.bundle\Contents\Win32\</OutDir>
+    <IntDir>$(TEMP)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+    <TargetExt>.ofx</TargetExt>
+    <IncludePath>.\ThirdParty\OpenFX\include;.\ThirdParty\OpenFX\Examples\include;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <TargetExt>.ofx</TargetExt>
+    <OutDir>$(SolutionDir)$(Platform)\$(ProjectName).ofx.bundle\Contents\Win64\</OutDir>
+    <IntDir>$(TEMP)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>..\..\ThirdParty\RapidJSON\include;..\..\ThirdParty\OpenFX\include;..\..\ThirdParty\OpenFX\Examples\include;..\..\ThirdParty\GMIC;..\..\ThirdParty\pthreads\include;.\ThirdParty\OpenFX\include;.\ThirdParty\OpenFX\Examples\include;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Platform)\$(ProjectName).ofx.bundle\Contents\Win32\</OutDir>
+    <IntDir>$(TEMP)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <TargetExt>.ofx</TargetExt>
+    <IncludePath>.\ThirdParty\OpenFX\include;.\ThirdParty\OpenFX\Examples\include;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <TargetExt>.ofx</TargetExt>
+    <OutDir>$(SolutionDir)$(Platform)\$(ProjectName).ofx.bundle\Contents\Win64\</OutDir>
+    <IntDir>$(TEMP)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>..\..\ThirdParty\RapidJSON\include;..\..\ThirdParty\OpenFX\include;..\..\ThirdParty\OpenFX\Examples\include;..\..\ThirdParty\GMIC;..\..\ThirdParty\pthreads\include;ThirdParty\OpenFX\include;ThirdParty\OpenFX\Examples\include;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;OFX_PLUGIN;WIN32;_DEBUG;_WINDOWS;_USRDLL;gmic_ofx_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4101</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>..\ThirdParty\RapidJSON\include;..\ThirdParty\OpenFX\include;..\ThirdParty\OpenFX\Examples\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>..\..\..\ThirdParty\gmic\src\libcgmic_$(Platform)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>../libcgmicstatic.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ProgramDatabaseFile>c:\temp\$(TargetName).pdb</ProgramDatabaseFile>
+    </Link>
+    <PostBuildEvent />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;OFX_PLUGIN;WIN32;_DEBUG;_WINDOWS;_USRDLL;gmic_ofx_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4101</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalDependencies>..\..\ThirdParty\pthreads\lib\pthreadVC2sd_x64.lib;..\..\ThirdParty\GMIC\libcgmicstatic.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <StackReserveSize>4000000</StackReserveSize>
+      <AdditionalLibraryDirectories>..\..\..\ThirdParty\gmic\src\libcgmic_$(Platform)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>c:\temp\$(TargetName).pdb</ProgramDatabaseFile>
+      <HeapReserveSize>4000000</HeapReserveSize>
+      <HeapCommitSize>16000</HeapCommitSize>
+      <StackCommitSize>16000</StackCommitSize>
+    </Link>
+    <PostBuildEvent />
+    <PostBuildEvent>
+      <Command>if not exist "C:\Program Files\Common Files\OFX\Plugins\gmic_ofx.ofx.bundle\Contents\Resources" mkdir "C:\Program Files\Common Files\OFX\Plugins\gmic_ofx.ofx.bundle\Contents\Resources"
+if not exist "C:\Program Files\Common Files\OFX\Plugins\gmic_ofx.ofx.bundle\Contents\Win64" mkdir "C:\Program Files\Common Files\OFX\Plugins\gmic_ofx.ofx.bundle\Contents\Win64"
+copy /Y "$(TargetPath)" /B "C:\Program Files\Common Files\OFX\Plugins\gmic_ofx.ofx.bundle\Contents\Win64\gmic_ofx.ofx" /B
+</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Creating bundle...</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;OFX_PLUGIN;WIN32;NDEBUG;_WINDOWS;_USRDLL;gmic_ofx_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4101</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>..\ThirdParty\RapidJSON\include;..\ThirdParty\OpenFX\include;..\ThirdParty\OpenFX\Examples\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>..\..\..\ThirdParty\gmic\src\libcgmic_$(Platform)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>../libcgmicstatic.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;OFX_PLUGIN;WIN32;NDEBUG;_WINDOWS;_USRDLL;gmic_ofx_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4101</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <AdditionalDependencies>..\..\ThirdParty\pthreads\lib\pthreadVC2s_x64.lib;..\..\ThirdParty\GMIC\libcgmicstatic.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <StackReserveSize>8000000</StackReserveSize>
+      <AdditionalLibraryDirectories>..\..\..\ThirdParty\gmic\src\libcgmic_$(Platform)</AdditionalLibraryDirectories>
+    </Link>
+    <PostBuildEvent />
+    <PostBuildEvent>
+      <Command>if not exist "$(OutDir)gmic_ofx.ofx.bundle\Contents\Resources" mkdir "$(OutDir)gmic_ofx.ofx.bundle\Contents\Resources"
+if not exist "$(OutDir)gmic_ofx.ofx.bundle\Contents\Win64" mkdir "$(OutDir)gmic_ofx.ofx.bundle\Contents\Win64"
+copy /Y "$(TargetPath)" /B "$(OutDir)gmic_ofx.ofx.bundle\Contents\Win64\gmic_ofx.ofx" /B
+if not exist "C:\Program Files\Common Files\OFX\Plugins\gmic_ofx.ofx.bundle\Contents\Resources" mkdir "C:\Program Files\Common Files\OFX\Plugins\gmic_ofx.ofx.bundle\Contents\Resources"
+if not exist "C:\Program Files\Common Files\OFX\Plugins\gmic_ofx.ofx.bundle\Contents\Win64" mkdir "C:\Program Files\Common Files\OFX\Plugins\gmic_ofx.ofx.bundle\Contents\Win64"
+copy /Y "$(TargetPath)" /B "C:\Program Files\Common Files\OFX\Plugins\gmic_ofx.ofx.bundle\Contents\Win64\gmic_ofx.ofx" /B
+</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Creating bundle...</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
