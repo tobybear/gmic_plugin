@@ -1,2 +1,2 @@
-gmic_pluginbatcher.exe update320.json gmic_ae.aex
+gmic_pluginbatcher.exe update321.json gmic_ae.aex
 pause

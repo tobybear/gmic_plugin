@@ -106,6 +106,7 @@ static gmicFilter deserializeFilter(const string s) {
 	string s2 = strReplace(s, "\\n", "\n");
 	vector<string> ss;
 	gmicFilter f;
+	f.name = "";
 	strSplit(s2, '$', ss, true);
 	if (ss.size() < 8) return f;
 	f.category = ss[0];
@@ -166,7 +167,39 @@ static string getUniqueId(string name) {
 }
 
 #ifndef AE_PLUGIN
-int parseFilters(const string& content, const vector<string>& selectList, vector<gmicFilter>& filters) {
+int applySelect(const vector<string>& selectList, vector<gmicFilter>& filters) {
+	if (selectList.size() == 0) return 1;
+	vector<gmicFilter> filters2;
+	for (int j = 0; j < (int)filters.size(); j++) {
+		string sf = filters[j].category + "/" + filters[j].name;
+
+		for (int i = 0; i < (int)selectList.size(); i++) {
+			string sl = strTrim(selectList[i], " \t\r\n");
+			if (sl == "" || sl[0] == '#' || sl[0] == ';') continue; // skip blank lines and comments
+			int pos = (int)sl.find("#");
+			if (pos >= 0) {
+				sl = sl.substr(0, pos); // trim comments at end of line
+			}
+			sl = strTrim(sl);
+
+			bool inv = false;
+			if (sl[0] == '+') sl = sl.substr(1);
+			if (sl[0] == '-') {
+				sl = sl.substr(1);
+				inv = true;
+			}
+			if ((int)sf.find(sl) >= 0) {
+				if (inv) break;
+				filters2.push_back(filters[j]);
+				break;
+			}
+		}
+	}
+	filters = filters2;
+	return 0;
+}
+
+int parseFilters(const string& content, vector<gmicFilter>& filters) {
 	// LOG << "parse filters start";
 	Document d;
 	d.Parse(content.c_str());
@@ -232,6 +265,7 @@ int parseFilters(const string& content, const vector<string>& selectList, vector
 				if (it3->HasMember("type")) fp.paramType = (*it3)["type"].GetString();
 				if (it3->HasMember("name")) fp.name = strLowercase((*it3)["name"].GetString());
 				if (strLowercase(fp.paramType) == "note" && (int)(strLowercase(fp.text).find(" layers")) >= 0) f.multiLayer = true;
+				if ((int)(strLowercase(fp.name).find("layer")) >= 0) f.multiLayer = true;
 				if (it3->HasMember("choices")) {
 					string choices;
 					Value& cf = (*it3)["choices"];
@@ -253,67 +287,20 @@ int parseFilters(const string& content, const vector<string>& selectList, vector
 				f.param.push_back(fp);
 			}
 			f.uniqueId = getUniqueId(f.name);
+			f.category = cat;
+			filters.push_back(f);
+			/*
 			if (selectList.size() == 0) {
 				f.category = cat;
 				filters.push_back(f);
 			} else {
 				if (filterMap.find(f.name) != filterMap.end()) {
-					// LOG << "filter already exists: " << f.name;
 					f.name += " (Alt.)";
 				}
-				// string fs = serializeFilter(f);
-				// if (fs.size() > fsmax.size()) fsmax = fs;
-
 				filterMap[f.name] = f;
 			}
-			fsmax += serializeFilter(f) + "\n";
-		}
-	}
-	
-	saveStringToFile(fsmax, get_gmic_rc_path() + "gmic_ae.txt");
-
-	if (selectList.size() == 0) {
-		// create a new filter select file, containing all filters by default in their original categories
-		string res, cat;
-		for (int i = 0; i < (int)filters.size(); i++) {
-			filters[i].category = "G'MIC - " + filters[i].category;
-			if (filters[i].category != cat) {
-				cat = filters[i].category;
-				res += cat + "\n";
-			}
-			res += "\t" + filters[i].name + "\n";
-		}
-		res += "\n";
-		saveStringToFile(res, get_gmic_rc_path() + "gmic_ofx.txt");
-	} else {
-		string cat = "G'MIC";
-		for (int i = 0; i < (int)selectList.size(); i++) {
-			string sl = selectList[i];
-			if (sl[0] == '#') continue; // skip comments
-			int pos = (int)sl.find("#");
-			if (pos >= 0) {
-				sl = sl.substr(0, pos);
-			}
-			sl = strTrim(sl);
-			if (sl[0] != '\a') {
-				cat = sl;
-			} else {
-				string dname = sl.substr(1);
-				string fname = dname;
-				int pos = (int)fname.find("|");
-				if (pos > 0) {
-					dname = dname.substr(0, pos);
-					fname = fname.substr(pos + 1);
-				}
-				if (filterMap.find(fname) == filterMap.end()) {
-					// LOG << "filter does not exist: " << fname;
-				} else {
-					gmicFilter& f = filterMap[fname];
-					f.category = cat;
-					f.name = dname;
-					filters.push_back(f);
-				}
-			}
+			*/
+			// fsmax += serializeFilter(f) + "\n";
 		}
 	}
 	// LOG << "parse filters: " << filters.size();
@@ -322,7 +309,7 @@ int parseFilters(const string& content, const vector<string>& selectList, vector
 #endif
 
 // this is a the generic G'MIC plugin's parameter code, followed by a static array of "dummy" data that goes unused in the generic G'MIC plugin, but gets patched over with the actual code to execute for specific filter builds
-extern "C" const char* GMIC_CODE = "G'MIC$G'MIC$eu.gmic.gmic$$$$1$8$Parameter A$0$1$0$$float$Parameter B$0$1$0$$float$Parameter C$0$1$0$$float$Parameter D$0$1$0$$float$Parameter E$0$1$0$$float$Parameter F$0$1$0$$float$Parameter G$0$1$0$$float$Parameter H$0$1$0$$float$$$$$" \
+extern "C" const char* GMIC_CODE = "G'MIC$G'MIC Generic Plugin$eu.gmic.gmic$$$$1$8$Parameter A$0$1$0$$float$Parameter B$0$1$0$$float$Parameter C$0$1$0$$float$Parameter D$0$1$0$$float$Parameter E$0$1$0$$float$Parameter F$0$1$0$$float$Parameter G$0$1$0$$float$Parameter H$0$1$0$$float$$$$$" \
 "############################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################" \
 "############################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################" \
 "############################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################" \

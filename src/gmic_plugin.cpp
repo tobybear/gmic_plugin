@@ -49,14 +49,15 @@
 #include "gmic_plugin.h"
 #include <atomic>
 
-#define PARAM_COMMAND (globalDataP->nofParams - 10)
-#define PARAM_OUTPUT (globalDataP->nofParams - 8)
-#define PARAM_RESIZE (globalDataP->nofParams - 7)
-#define PARAM_NOALPHA (globalDataP->nofParams - 6)
-#define PARAM_PREVIEW (globalDataP->nofParams - 5)
-#define PARAM_SRAND (globalDataP->nofParams - 4)
-#define PARAM_ANIMSEED (globalDataP->nofParams - 3)
-#define PARAM_VERBOSITY (globalDataP->nofParams - 2)
+#define PARAM_COMMAND (globalDataP->nofParams - 11)
+#define PARAM_OUTPUT (globalDataP->nofParams - 9)
+#define PARAM_RESIZE (globalDataP->nofParams - 8)
+#define PARAM_NOALPHA (globalDataP->nofParams - 7)
+#define PARAM_PREVIEW (globalDataP->nofParams - 6)
+#define PARAM_SRAND (globalDataP->nofParams - 5)
+#define PARAM_ANIMSEED (globalDataP->nofParams - 4)
+#define PARAM_VERBOSITY (globalDataP->nofParams - 3)
+#define PARAM_MULTITHREADED (globalDataP->nofParams - 2)
 
 class ThreadData {
 public:
@@ -66,12 +67,13 @@ public:
 	atomic<bool> doProcess;
 	atomic<bool> doExit;
 	atomic<bool> initialized;
-//	bool busy;
+	atomic<bool> multithreaded;
 	unsigned int nofImages;
 	gmic_interface_image images[MAX_NOF_LAYERS];
 	gmic_interface_options options;
 
 	ThreadData() {
+		multithreaded = false;
 		initialized = false;
 		doProcess = false;
 		doExit = false;
@@ -194,18 +196,6 @@ public:
 			requestData r;
 			string result;
 
-			// check if filter selection file exists (this file defines what filters are reported to the host and in what categories)
-			// if it doesn't exist, create a new file containing all the filters
-			vector<string> selectList;
-			string listFile = rc_path + "gmic_ofx.txt";
-			string l = loadStringFromFile(listFile);
-			if (l != "") {
-				l = strReplace(l, "\r\n", "\n");
-				l = strReplace(l, "\r", "\n");
-				l = strReplace(l, "\t", "\a");
-				strSplit(l, '\n', selectList, false);
-			}
-
 			// check if JSON file exists (either a custom one called gmic_ofx.json, or if not, the official updateXXX.json)
 			string filterFile = rc_path + "gmic_ofx.json";
 			if (!fileExists(filterFile)) filterFile = rc_path + "update" + gmicVersion + ".json";
@@ -220,13 +210,40 @@ public:
 				if (result != "") saveStringToFile(result, updateFile);
 			}
 
-			string effectContent = loadStringFromFile(filterFile);
-			if (!effectContent.empty()) {
+			vector<string> selectList;
+
+			string filterFileContent = loadStringFromFile(filterFile);
+			if (!filterFileContent.empty()) {
 
 				// parse the JSON into our internal structure
-				parseFilters(effectContent, selectList, filters);
-				gmicFilter filter = deserializeFilter(GMIC_CODE);
-				filters.push_back(filter);
+				parseFilters(filterFileContent, filters);
+
+				string filterSelectFileAE = rc_path + "gmic_ae.txt";
+				if (!fileExists(filterSelectFileAE)) {
+					string filterSrc;
+					for (int i = 0; i < (int)filters.size(); i++) {
+						filterSrc += serializeFilter(filters[i]) + "\n";
+					}
+					saveStringToFile(filterSrc, filterSelectFileAE);
+				}
+
+				string filterSelectFileOFX = rc_path + "gmic_ofx.txt";
+				string l = loadStringFromFile(filterSelectFileOFX);
+				if (l != "") {
+					l = strReplace(l, "\r\n", "\n");
+					l = strReplace(l, "\r", "\n");
+					l = strReplace(l, "\t", "\a");
+					strSplit(l, '\n', selectList, false);
+					applySelect(selectList, filters);
+				} else {
+					// create a new filter select file, containing all filters
+					string res, cat;
+					for (int i = 0; i < (int)filters.size(); i++) {
+						res += filters[i].category + "/" + filters[i].name + "\n";
+					}
+					res += "\n";
+					saveStringToFile(res, filterSelectFileOFX);
+				}
 
 				// check if G'MIC update file exists, if not, download it
 				// this is necessary since the JSON is built against the updated filter set
@@ -236,6 +253,12 @@ public:
 					if (result != "") saveStringToFile(result, updateFile);
 				}
 			}
+
+			// always add generic G'MIC filter
+			gmicFilter filter = deserializeFilter(GMIC_CODE);
+			filter.category = "";
+			filters.push_back(filter);
+
 		} catch(...) {
 		}
 		initialized = true;
@@ -443,9 +466,9 @@ int pluginSetup(GlobalData* globalDataP, ContextData* /*contextDataP*/) {
 		globalDataP->param[p] = Parameter("Add. Layer 4", "", PT_LAYER);
 		++p;
 	}	
-	globalDataP->param[p] = Parameter("Command", "", PT_TEXT, 0, 0, 0, 0, 0, 0, "-blur 2");
+	globalDataP->param[p] = Parameter("Command", "", PT_TEXT, 0, 0, 0, 0, 0, 0, "-blur {$A*100}");
 #ifndef FREI0R_PLUGIN
-	if (strTrim(filter.name) != "G'MIC") globalDataP->param[p].displayStatus = DS_HIDDEN;
+	if (strTrim(filter.name) != "G'MIC Generic Plugin") globalDataP->param[p].displayStatus = DS_HIDDEN;
 #endif
 	++p;
 
@@ -468,6 +491,8 @@ int pluginSetup(GlobalData* globalDataP, ContextData* /*contextDataP*/) {
 	globalDataP->param[p] = Parameter("Animate Random Seed", "", PT_BOOL, 0, 1, 0, 0, 0, 0, "");
 	++p;
 	globalDataP->param[p] = Parameter("Log Verbosity", "", PT_SELECT, 0, 4, 0, 0, 0, 0, "Off|Level 1|Level 2|Level 3|Level 4|Level 5|Level 6|Level 7|Level 8|Level 9|Level 10");
+	++p;
+	globalDataP->param[p] = Parameter("Multithreaded Processing", "", PT_BOOL, 0, 1, 0, 0, 0, 0, "");
 	++p;
 	globalDataP->param[p] = Parameter("Advanced Options", "", PT_TOPIC_END);
 	++p;
@@ -509,7 +534,7 @@ static string gmicCommand(WorldData* worldDataP, SequenceData* sequenceDataP, Gl
 		}
 	} else {
 		cmd = "-" + strTrim(cmd, " \t\r\n") + " ";
-		for (int i = 1; i < globalDataP->nofParams - 10; i++) {
+		for (int i = 1; i < globalDataP->nofParams - 11; i++) {
 //if ((int)(strLowercase(globalDataP->param[i].paramName).find("preview")) >= 0) break;
 //			LOG << "param " << i << ": " << PAR_TYPE(i) << ", " << globalDataP->param[i].paramName << ", " << PAR_VAL(i);
 			if (PAR_TYPE(i) == PT_INT || PAR_TYPE(i) == PT_BOOL || PAR_TYPE(i) == PT_SELECT) {
@@ -595,12 +620,12 @@ void* runCmd(void* arg) {
 		if (td->doProcess) {
 //			printf("start cmd %s\n", td->cmd.c_str());
 //			LOG << "START " << td->cmd;
-			gmic_cmd_mtx.lock();
+			if (!td->multithreaded) gmic_cmd_mtx.lock();
 			try {
 				td->result = gmic_call(td->cmd.c_str(), &(td->nofImages), &(td->images[0]), &(td->options));
 			} catch(...) {
 			}
-			gmic_cmd_mtx.unlock();
+			if (!td->multithreaded) gmic_cmd_mtx.unlock();
 //			LOG << "STOP " << td->cmd;
 //			printf("stop cmd %s, result = %d\n", td->cmd.c_str(), td->result);
 			td->doProcess = false;
@@ -707,6 +732,7 @@ int pluginProcess(WorldData* worldDataP, SequenceData* sequenceDataP, GlobalData
 		td.cmd += " -gui_merge_layers";
 	}
 
+	td.multithreaded = PAR_VAL(PARAM_MULTITHREADED) > 0.f;
 #ifdef SINGLE_THREADED
 	td.doProcess = false;
 	td.result = gmic_call(td.cmd.c_str(), &(td.nofImages), &(td.images[0]), &(td.options));
@@ -876,7 +902,9 @@ void getPluginInfo(int pluginIndex, PluginInfo& pluginInfo) {
 	
 	n = gmicGlobalData.filters[pluginIndex].category;
 	n = strReplace(n, " & ", " And ");
-	pluginInfo.category = strTrim(n);
+	n = strTrim(n);
+	if (n != "") n = "/" + n;
+	pluginInfo.category = "G'MIC OFX" + n;
 
 	pluginInfo.description = strTrim(gmicGlobalData.filters[pluginIndex].notes + " \n \n" + c2s(PLUGIN_DESCRIPTION));
 	pluginInfo.major_version = PLUGIN_MAJOR_VERSION;

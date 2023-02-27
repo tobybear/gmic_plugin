@@ -198,6 +198,24 @@ static string loadStringFromFile(const string filename, const bool loadOnlyText 
 	return res;
 }
 
+static int loadLinesFromFile(const string filename, vector<string>& lines, bool bIgnoreEmptyLines = false) {
+	string res;
+	lines.clear();
+	if (filename == "") return -1;
+	string s = loadStringFromFile(filename);
+
+	stringstream ss(stringstream::in | stringstream::out);
+	ss << s;
+	string line, section, token, val;
+
+	while (getline(ss, line)) {
+		line = strTrim(line, "\r\n");
+		if (line != "" || !bIgnoreEmptyLines)
+			lines.push_back(line);
+	}
+	return 0;
+}
+
 static int saveStringToFile(string s, const string filename, const bool unifyLineEndings = false) {
 	ofstream myfile(filename.c_str(), ios::out | ios::binary);
 	if (myfile.is_open()) {

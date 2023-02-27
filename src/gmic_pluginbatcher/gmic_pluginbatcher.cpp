@@ -144,13 +144,19 @@ static void patchbin(string pf, string pfout, const gmicFilter& f) {
 	loadBufferFromFile(pf, &p, len);
 	string fcode = serializeFilter(f) + "$$$";
 	string fcode_src = string(GMIC_CODE);
-	if (fcode.size() > fcode_src.size()) fcode = fcode.substr(0, fcode_src.size());
+	if (fcode.size() > fcode_src.size()) {
+		// fcode = fcode.substr(0, fcode_src.size());
+		printf("ERROR: filter source code for '%s' is too big!", f.name.c_str());
+		delete[] p;
+		return;
+	}
 	replacebin(p, len, fcode_src, fcode, false);
 
 	// TODO: check if strings longer than 31 characters cause problems
 	// for example some unique IDs are no longer unique if shortened!
+	string cat = "G'MIC - " + f.category;
 	replacebin(p, len, PLUGIN_NAME, f.name.substr(0, 31));
-	replacebin(p, len, PLUGIN_CATEGORY, f.category.substr(0, 31));
+	replacebin(p, len, PLUGIN_CATEGORY, cat.substr(0, 31));
 	replacebin(p, len, PLUGIN_UNIQUEID, f.uniqueId.substr(0, 31));
 
 	saveBufferToFile((const unsigned char**)&p, len, pfout);
@@ -159,11 +165,16 @@ static void patchbin(string pf, string pfout, const gmicFilter& f) {
 
 int main(int argc, char* argv[]) {
 	if (argc < 3) {
-		printf("ERROR: invalid parameters!\nUsage: gmicpluginbatcher JSONFILE TEMPLATEFILE\n");
+		printf("ERROR: invalid parameters!\nUsage: gmicpluginbatcher FILTERFILE TEMPLATEFILE [SELECTFILE]\n");
 		return 1;
 	}
 	string filterFile = string(argv[1]);
 	string templateFile = string(argv[2]);
+	string selectFile;
+	vector<string> selectList;
+	if (argc > 3) {
+		selectFile = string(argv[3]);
+	}
 	if (!fileExists(filterFile)) {
 		printf("ERROR: filter file '%s' not found!\n", filterFile.c_str());
 		return 1;
@@ -172,16 +183,45 @@ int main(int argc, char* argv[]) {
 		printf("ERROR: template file '%s' not found!\n", templateFile.c_str());
 		return 1;
 	}
-	string f = loadStringFromFile(filterFile);
-	vector<string> selectList;
+	if (selectFile != "") {
+		if (!fileExists(selectFile)) {
+			printf("ERROR: select file '%s' not found!\n", selectFile.c_str());
+			return 1;
+		}
+		string l = loadStringFromFile(selectFile);
+		if (l != "") {
+			l = strReplace(l, "\r\n", "\n");
+			l = strReplace(l, "\r", "\n");
+			l = strReplace(l, "\t", "\a");
+			strSplit(l, '\n', selectList, false);
+		}
+
+	}
+	string f;
 	vector<gmicFilter> filters;
-	parseFilters(f, selectList, filters);
+	if (strLowercase(filterFile).find(".json") < 0) {
+		vector<string> lines;
+		loadLinesFromFile(filterFile, lines, true);
+		for (int i = 0; i < (int)lines.size(); i++) {
+			gmicFilter& gf = deserializeFilter(lines[i]);
+			if (gf.name != "") {
+				filters.push_back(gf);
+			}
+		}
+	} else {
+		f = loadStringFromFile(filterFile);
+		parseFilters(f, filters);
+	}
+	applySelect(selectList, filters);
 	printf("Found %d filters\n", filters.size());
 	string outFile;
 	for (int i = 0; i < (int)filters.size(); i++) {
 		int pos = (int)templateFile.rfind(".");
-		if (pos < 0) outFile = templateFile + filters[i].name;
-		else outFile = templateFile.substr(0, pos) + "_" + filters[i].name + templateFile.substr(pos);
+		if (pos < 0) {
+			outFile = templateFile + "_" + filters[i].category + "_" +  filters[i].name;
+		} else {
+			outFile = templateFile.substr(0, pos) + "_" + filters[i].category + "_" + filters[i].name + templateFile.substr(pos);
+		}
 		patchbin(templateFile, outFile, filters[i]);
 		printf("Creating %s\n", outFile.c_str());
 	}
